@@ -28,4 +28,6 @@ def convert_nlp_to_sql_poc(prompt_text):
         stop=["#", ";"])
 
     answer = response.choices[0].text.strip()
-    return answer
+    bad_chars = ['?']
+    final_ans = ''.join(i for i in answer if not i in bad_chars)
+    return final_ans
