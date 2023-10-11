@@ -22,3 +22,14 @@ Run main.py file to start the flask server,
 1. python main.py
 
 This command will start the flask server at localhost:5000
+
+# Checking the correct driver in your system
+If you are getting the below error,
+
+"Error: ('IM002', '[IM002] [Microsoft][ODBC Driver Manager] Data source name not found and no default driver specified (0) (SQLDriverConnect)')"
+
+This means we don't have the required ODBC driver installed in our system. In this case first we need to check the version for the ODBC driver installed in our system. 
+
+In the "nlp.py" file search for "serverless_connection_string", in the driver value we can replace the driver version from "Driver={ODBC Driver 18 for SQL Server}" to "Driver={ODBC Driver (version installed in our system) for SQL Server}".
+
+After this start the flask server again, it will work.
