@@ -31,7 +31,7 @@ def convert_nlp_to_sql_poc(prompt_text):
     answer = response.choices[0].text.strip()
     final_ans = answer.replace("'", "").replace("?", "").replace("<|im_end|>", "")
     try:
-        fetch_data_synapse(serverless_connection_string, final_ans)
-        return final_ans
+        out = fetch_data_synapse(serverless_connection_string, final_ans)
+        return final_ans, out
     except Exception as e:
         print(f"Error: {str(e)}")

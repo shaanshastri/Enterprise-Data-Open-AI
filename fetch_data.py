@@ -1,5 +1,6 @@
 import pyodbc
 import pandas as pd
+from pandasql import sqldf
 
 
 def fetch_data_synapse(serverless_connection_string, query):
@@ -10,9 +11,9 @@ def fetch_data_synapse(serverless_connection_string, query):
         # Process the results
         tableResult = pd.read_sql(query, conn)
         df = pd.DataFrame(tableResult)
-        df.to_csv(r"C:\Users\manaagarwal\Downloads\data.csv", sep=',', index=False)
-
-        return "Success"
+        #df.to_csv(r"C:\Users\manaagarwal\Downloads\data.csv", sep=',', index=False)
+        output = sqldf("select * from df limit 5")
+        return output
 
     except Exception as e:
         print(f"Error: {str(e)}")

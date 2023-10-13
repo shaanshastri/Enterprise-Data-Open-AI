@@ -17,7 +17,8 @@ def chat():
 
 @app.route('/call_model', methods=['POST'])
 def get_Chat_response(txt):
-    response = convert_nlp_to_sql_poc(txt)
+    response, data = convert_nlp_to_sql_poc(txt)
+    print(data)
     return response
 
 
