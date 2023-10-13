@@ -1,5 +1,6 @@
 import openai
 from metadata import generate_synapse_ddls
+from fetch_data import fetch_data_synapse
 
 
 def convert_nlp_to_sql_poc(prompt_text):
@@ -10,7 +11,7 @@ def convert_nlp_to_sql_poc(prompt_text):
     deployment_name = 'davinci'
     database_name = "GenAI"
 
-    serverless_connection_string = ('Driver={ODBC Driver 13 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
+    serverless_connection_string = ('Driver={ODBC Driver 17 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
                                     '.azuresynapse.net,1433;Database=GenAI;Uid=masterdummy;Pwd={'
                                     '!pass@123};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
     metadata_adv = generate_synapse_ddls(serverless_connection_string, database_name)
@@ -28,6 +29,9 @@ def convert_nlp_to_sql_poc(prompt_text):
         stop=["#", ";"])
 
     answer = response.choices[0].text.strip()
-    bad_chars = ['?']
-    final_ans = ''.join(i for i in answer if not i in bad_chars)
-    return final_ans
+    final_ans = answer.replace("'", "").replace("?", "").replace("<|im_end|>", "")
+    try:
+        fetch_data_synapse(serverless_connection_string, final_ans)
+        return final_ans
+    except Exception as e:
+        print(f"Error: {str(e)}")
