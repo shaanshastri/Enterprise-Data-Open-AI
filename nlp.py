@@ -15,10 +15,10 @@ def convert_nlp_to_sql_poc(prompt_text):
     # openai.api_type = 'azure'
     # openai.api_version = '2023-07-01-preview'
     # deployment_name = 'davinci'
-    # database_name = "GenAI"
+    # database_name = "GenAI_v2"
 
     serverless_connection_string = ('Driver={ODBC Driver 18 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
-                                    '.azuresynapse.net,1433;Database=GenAI;Uid=masterdummy;Pwd={'
+                                    '.azuresynapse.net,1433;Database=GenAI_v2;Uid=masterdummy_2;Pwd={'
                                     '!pass@123};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
     # metadata_adv = generate_synapse_ddls(serverless_connection_string, database_name)
 
@@ -29,7 +29,7 @@ def convert_nlp_to_sql_poc(prompt_text):
     # ---{str(metadata_adv)}--- \n
     # The response should only be the SQL query without any explanation. \n
     # """
-    # # If the query is not linked to the tables in the above ddls, output that no such table is available."""
+    # If the query is not linked to the tables in the above ddls, output that no such table is available."""
     # response = openai.Completion.create(
     #     engine=deployment_name,
     #     prompt=full_prompt,
