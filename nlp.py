@@ -78,7 +78,7 @@ def convert_nlp_to_sql_poc(prompt_text):
 
     # from langchain.chat_models import ChatOpenAI
     chain = create_sql_query_chain(llm, db)
-    response = chain.invoke({"question":"Who are the customers buying yellow colored product in january."})
+    response = chain.invoke({"question":prompt_text})
     out = fetch_data_synapse(serverless_connection_string, response)
     return response, out
 
