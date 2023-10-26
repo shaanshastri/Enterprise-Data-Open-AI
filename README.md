@@ -16,8 +16,10 @@ We can only run locally after running the below commands. These commands will ad
 1. pip install Flask
 2. pip install pyodbc
 3. pip install openai
+4. pip install langchain
 4. pip install pandas
 5. pip install pandasql
+6. pip install tabulate
 
 # Starting the flask server
 Run main.py file to start the flask server,
