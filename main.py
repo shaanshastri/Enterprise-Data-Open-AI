@@ -23,7 +23,8 @@ def get_Chat_response(txt):
     table = tabulate(data, headers='keys', tablefmt='fancy_grid')
     # Print the tabular format
     print(table)
-    return response
+    return render_template('index.html', tables=[data.to_html(classes='data')], titles=data.columns.values,
+                           response=response)
 
 
 if __name__ == "__main__":
