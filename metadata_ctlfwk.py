@@ -40,7 +40,7 @@ def generate_ddl_from_metadata(connection):
 
 # Connect to Azure SQL Database using pyodbc
 conn = pyodbc.connect(
-    'DRIVER={ODBC Driver 17 for SQL Server};SERVER=tcp:sqldb-cl-dev-001.database.windows.net,1433;DATABASE=sqldb-cl-training;UID=serveradmin;PWD=Admin123'
+    'DRIVER={ODBC Driver 18 for SQL Server};SERVER=tcp:sqldb-cl-dev-001.database.windows.net,1433;DATABASE=sqldb-cl-training;UID=serveradmin;PWD=Admin123'
 )
 
 ddl_statements = generate_ddl_from_metadata(conn)
