@@ -19,6 +19,9 @@ def chat():
 @app.route('/call_model', methods=['POST'])
 def get_Chat_response(txt):
     response, data = convert_nlp_to_sql_poc(txt)
+
+    if data is None:
+        return render_template('index_new.html', response=response)
     # Convert the DataFrame to a tabular format with borders
     table = tabulate(data, headers='keys', tablefmt='fancy_grid')
     # Print the tabular format
