@@ -20,38 +20,19 @@ def convert_nlp_to_sql_poc(prompt_text):
     serverless_connection_string = ('Driver={ODBC Driver 17 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
                                     '.azuresynapse.net,1433;Database=GenAI_v2;Uid=masterdummy_2;Pwd={'
                                     '!pass@123};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
-    # metadata_adv = generate_synapse_ddls(serverless_connection_string, database_name)
+    
+    # Azure Synapse Analytics as Consumption Layer
+    # my_uid = "masterdummy_2"
+    # my_pwd = "!pass@123"
+    # my_host = "tcp:synw-infra-int-dev-ondemand.sql.azuresynapse.net,1433"
+    # my_db = "GenAI_v2"
+    # my_odbc_driver = "ODBC Driver 17 for SQL Server"
 
-    # full_prompt = f"""
-    # You are expert SQL developer, write a SQL query for the text enclosed within "---" 
-    # ---{str(prompt_text)}---.\n
-    # Use the table data definition language (ddl) enclosed within "---" below ensuring the query is specific to column and table names.
-    # ---{str(metadata_adv)}--- \n
-    # The response should only be the SQL query without any explanation. \n
-    # """
-    # If the query is not linked to the tables in the above ddls, output that no such table is available."""
-    # response = openai.Completion.create(
-    #     engine=deployment_name,
-    #     prompt=full_prompt,
-    #     temperature=0,
-    #     max_tokens=600,
-    #     top_p=1.0,
-    #     frequency_penalty=0.0,
-    #     presence_penalty=0.0,
-    #     stop=["#", ";"])
 
-    # # print(full_prompt)
-    # answer = response.choices[0].text.strip()
-    # final_ans = answer.replace("'", "").replace("?", "").replace("<|im_end|>", "")
-    # try:
-    #     out = fetch_data_synapse(serverless_connection_string, final_ans)
-    #     return final_ans, out
-    # except Exception as e:
-    #     print(f"Error: {str(e)}")
-    my_uid = "masterdummy_2"
-    my_pwd = "!pass@123"
-    my_host = "tcp:synw-infra-int-dev-ondemand.sql.azuresynapse.net,1433"
-    my_db = "GenAI_v2"
+    my_uid = "serveradmin"
+    my_pwd = "Admin123"
+    my_host = "tcp:sqldb-cl-dev-001.database.windows.net,1433"
+    my_db = "sqldb-cl-dev-002"
     my_odbc_driver = "ODBC Driver 17 for SQL Server"
 
     connection_url = URL.create(
@@ -71,6 +52,8 @@ def convert_nlp_to_sql_poc(prompt_text):
 
     db = SQLDatabase.from_uri(connection_url)
 
+    print(db)
+
     #setting Azure OpenAI env variables
 
     llm = AzureChatOpenAI(deployment_name="davinci", temperature=0, max_tokens=1000)
@@ -78,8 +61,9 @@ def convert_nlp_to_sql_poc(prompt_text):
 
     # from langchain.chat_models import ChatOpenAI
     chain = create_sql_query_chain(llm, db)
-    #print(chain)
+    print(chain)
     response = chain.invoke({"question":prompt_text})
     out = fetch_data_synapse(serverless_connection_string, response)
     return response, out
     #return response
+    
