@@ -15,14 +15,11 @@ def generate_synapse_ddls(serverless_connection_string, database_name):
                 t.TABLE_SCHEMA,
                 c.COLUMN_NAME,
                 c.DATA_TYPE,
-                c.ORDINAL_POSITION,
-                c.COLUMN_DEFAULT,
-                c.IS_NULLABLE,
+                
+                
                 rc.CONSTRAINT_NAME AS REFERENTIAL_CONSTRAINT_NAME,
-                rc.UNIQUE_CONSTRAINT_NAME AS UNIQUE_CONSTRAINT_NAME,
-                rc.MATCH_OPTION AS MATCH_OPTION,
-                rc.UPDATE_RULE AS UPDATE_RULE,
-                rc.DELETE_RULE AS DELETE_RULE
+                rc.UNIQUE_CONSTRAINT_NAME AS UNIQUE_CONSTRAINT_NAME
+                
             FROM
                 [{database_name}].information_schema.COLUMNS c
                 JOIN [{database_name}].information_schema.TABLES t ON c.TABLE_NAME = t.TABLE_NAME
@@ -45,9 +42,9 @@ def generate_synapse_ddls(serverless_connection_string, database_name):
         # Process the results
         for row in cursor.fetchall():
             (
-                table_name, table_schema, column_name, data_type, ordinal_position,
-                column_default, is_nullable, ref_constraint_name, unique_constraint_name,
-                match_option, update_rule, delete_rule
+                table_name, table_schema, column_name, data_type,
+                 ref_constraint_name, unique_constraint_name,
+                
             ) = row
 
             # If it's a new table, start a new DDL statement
@@ -64,18 +61,14 @@ def generate_synapse_ddls(serverless_connection_string, database_name):
             # Construct column definition with schema information
             column_definition = f"{column_name} {data_type}"
 
-            if column_default:
-                column_definition += f" DEFAULT {column_default}"
-
-            if not is_nullable:
-                column_definition += " NOT NULL"
+            
 
             # Add referential integrity constraints
             if ref_constraint_name:
                 column_definition += (
                     f", CONSTRAINT {ref_constraint_name} "
-                    f"FOREIGN KEY ({column_name}) REFERENCES {unique_constraint_name} MATCH {match_option} "
-                    f"ON UPDATE {update_rule} ON DELETE {delete_rule}"
+                    f"FOREIGN KEY ({column_name}) REFERENCES {unique_constraint_name} "
+                    
                 )
 
             # Add the column to the current table's DDL statement
