@@ -7,6 +7,12 @@ from langchain.chat_models import AzureChatOpenAI
 from langchain.chains import create_sql_query_chain
 import os
 from sqlalchemy.engine import URL
+from my_toolkit import CustomSQLDatabaseToolkit
+from langchain.agents import create_sql_agent
+from langchain.agents.agent_types import AgentType
+import re
+from langchain.prompts.chat import ChatPromptTemplate
+from langchain.agents.agent_toolkits import SQLDatabaseToolkit
 
 
 def convert_nlp_to_sql_poc(prompt_text):
@@ -17,9 +23,10 @@ def convert_nlp_to_sql_poc(prompt_text):
     # deployment_name = 'davinci'
     # database_name = "GenAI_v2"
 
-    serverless_connection_string = ('Driver={ODBC Driver 18 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
-                                    '.azuresynapse.net,1433;Database=GenAI_v2;Uid=masterdummy_2;Pwd={'
-                                    '!pass@123};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
+    # serverless_connection_string = ('Driver={ODBC Driver 18 for SQL Server};Server=tcp:synw-infra-int-dev-ondemand.sql'
+    #                                 '.azuresynapse.net,1433;Database=GenAI_v2;Uid=masterdummy_2;Pwd={'
+    #                                 '!pass@123};Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;')
+    
     # metadata_adv = generate_synapse_ddls(serverless_connection_string, database_name)
 
     # full_prompt = f"""
@@ -73,12 +80,49 @@ def convert_nlp_to_sql_poc(prompt_text):
 
     #setting Azure OpenAI env variables
 
-    llm = AzureChatOpenAI(deployment_name="davinci", temperature=0, max_tokens=4000)
+    llm = AzureChatOpenAI(deployment_name="davinci", temperature=0, max_tokens=300)
     # db_chain = SQLDatabaseChain.from_llm(llm=llm, db=db, verbose=True)
 
+    # response = db_chain.run(prompt_text)
+    # toolkit = SQLDatabaseToolkit(db=db, llm=AzureChatOpenAI(deployment_name="davinci", temperature=0))
+
+    # toolkit = CustomSQLDatabaseToolkit(db=db, llm=AzureChatOpenAI(deployment_name="davinci", temperature=0))
+
+    # agent_executor = create_sql_agent(
+    #     llm=llm,
+    #     toolkit=toolkit,
+    #     verbose=True,
+    #     agent_type=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    # prefix="Output only Select SQL query to query a MSSQL database. Provide a column name if there is no column name or a aggregator function is used. "
+    # )
+    
     # from langchain.chat_models import ChatOpenAI
     chain = create_sql_query_chain(llm, db)
+
+    # final_prompt = ChatPromptTemplate.from_messages(
+    # [
+    #     ("system", 
+    #      """
+    #       You are a helpful AI assistant expert in creating SQL queries to query MSSQL database. 
+    #       All tables are available in the database. Provide a column name if there is no column name available or a aggregator function is used. 
+    #       Do no output anything apart from the select query.
+    #      """
+    #      ),
+    #     ("user", "Convert the following to SQL query, {question}"),
+    # ]
+    # )
+    # response = agent_executor.run(final_prompt.format(
+    #     question=prompt_text))
+
     response = chain.invoke({"question":prompt_text})
-    out = fetch_data_synapse(serverless_connection_string, response)
+    # print(response)
+    # response = agent_executor.run(prompt_text)
+
+    # response_match = re.search(r"SELECT(\S|\s)*", response)
+    # response_match 
+    # response = chain.invoke({"question":prompt_text})
+    # print(response_match.group(0))
+    out = fetch_data_synapse(connection_url, response)
+
     return response, out
 
